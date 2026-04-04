@@ -13,7 +13,15 @@ class BookSeeder extends Seeder
         $books = json_decode($json, true);
 
         foreach ($books as $book) {
-            Book::create($book);
+            Book::create([
+                'title' => $book['title'] ?? null,
+                'author' => $book['author'] ?? null,
+                'year' => $book['year'] ?? null,
+                'cover' => $book['cover'] ?? null,
+                'status' => $book['status'] ?? 'available',
+                'description' => $book['description'] ?? null,
+                'stock' => $book['stock'] ?? 0,
+            ]);
         }
     }
 }
