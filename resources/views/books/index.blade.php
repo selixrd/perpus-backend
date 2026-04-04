@@ -63,7 +63,7 @@ value="{{ request('search') }}">
 
 @if($book->cover)
 
-<img src="{{ asset('storage/'.$book->cover) }}"
+<img src="{{ asset($book->cover) }}"
 class="rounded shadow-sm"
 style="width:90px">
 

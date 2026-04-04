@@ -16,7 +16,7 @@
             <hr>
 
             @if($book->cover)
-                <img src="{{ asset('storage/'.$book->cover) }}" width="200" class="mb-3">
+               <img src="{{ asset($book->cover) }}" width="200" class="mb-3">
             @endif
 
             <p><b>Author:</b> {{ $book->author }}</p>
