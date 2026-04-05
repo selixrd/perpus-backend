@@ -128,8 +128,8 @@ Route::get('/profile/{id}', function ($id) {
         'email' => $user->email,
         'role' => $user->role,
         'photo' => $user->photo
-            ? asset('storage/' . $user->photo)
-            : null,
+         ? secure_asset('storage/' . $user->photo)
+        : null,
 
         'student_name' => $student->name ?? '',
         'nis' => $student->nis ?? '',
@@ -241,7 +241,7 @@ Route::post('/profile/photo', function (Request $request) {
 
     return response()->json([
         'message' => 'Foto berhasil diupload',
-        'photo' => asset('storage/' . $path)
+        'photo' => secure_asset('storage/' . $path)
     ]);
 });
 
