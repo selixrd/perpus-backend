@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Book;
@@ -51,14 +52,14 @@ Route::post('/borrow', function (Request $request) {
         }
 
         $activeBorrow = Borrowing::where('student_id', $student->id)
-    ->whereNull('return_date')
-    ->count();
+            ->whereNull('return_date')
+            ->count();
 
-if ($activeBorrow >= 3) {
-    return response()->json([
-        'message' => 'Maksimal 3 buku sedang dipinjam'
-    ], 400);
-}
+        if ($activeBorrow >= 3) {
+            return response()->json([
+                'message' => 'Maksimal 3 buku sedang dipinjam'
+            ], 400);
+        }
 
         // ambil buku + lock biar aman
         $book = Book::where('id', $request->book_id)
@@ -128,8 +129,8 @@ Route::get('/profile/{id}', function ($id) {
         'email' => $user->email,
         'role' => $user->role,
         'photo' => $user->photo
-         ? secure_asset('storage/' . $user->photo)
-        : null,
+            ? secure_url('/api/profile/photo/view/' . $user->id)
+            : null,
 
         'student_name' => $student->name ?? '',
         'nis' => $student->nis ?? '',
@@ -137,6 +138,22 @@ Route::get('/profile/{id}', function ($id) {
         'major' => $student->major ?? '',
         'address' => $student->address ?? '',
     ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| VIEW PROFILE PHOTO
+|--------------------------------------------------------------------------
+*/
+Route::get('/profile/photo/view/{id}', function ($id) {
+
+    $user = User::findOrFail($id);
+
+    if (!$user->photo || !Storage::disk('public')->exists($user->photo)) {
+        abort(404);
+    }
+
+    return response()->file(storage_path('app/public/' . $user->photo));
 });
 
 /*
@@ -241,7 +258,7 @@ Route::post('/profile/photo', function (Request $request) {
 
     return response()->json([
         'message' => 'Foto berhasil diupload',
-        'photo' => secure_asset('storage/' . $path)
+        'photo' => secure_url('/api/profile/photo/view/' . $user->id)
     ]);
 });
 
